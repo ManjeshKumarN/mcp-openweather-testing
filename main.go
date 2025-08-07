@@ -32,8 +32,8 @@ const weatherTemplateTxt = `Current weather for {{.Name}}:
 const forecastTemplateTxt = `Weather Forecast for {{.City.Name}}:
 {{range .List}}Date & Time: {{.DtTxt}}
 Conditions:  {{range .Weather}}{{.Main}} {{.Description}}{{end}}
-Temp:        {{.Main.Temp}} 
-High:        {{.Main.TempMax}} 
+Temp:        {{.Main.Temp}}
+High:        {{.Main.TempMax}}
 Low:         {{.Main.TempMin}}
 
 {{end}}
@@ -54,18 +54,20 @@ func main() {
 
 	// Add tool
 	tool := mcp.NewTool("weather",
-		mcp.WithDescription("Get current and forecast weather information for a specific City"),
+		mcp.WithDescription("Retrieves current and forecast weather information for a given location."),
 		mcp.WithString("city",
 			mcp.Required(),
-			mcp.Description("Location to get weather. If location has a space, wrap the location in double quotes."),
+			mcp.Description(`The name of the city to get weather for.
+Must be in English.
+Example: For Saint Petersburg, use "Saint Petersburg", not "Санкт-Петербург".`),
 		),
 		mcp.WithString("units",
 			mcp.DefaultString("c"),
-			mcp.Description("Temperature units (celsius|fahrenheit|kelvin) - default: c"),
+			mcp.Description(`The unit for temperature. Use "c" for Celsius, "f" for Fahrenheit, or "k" for Kelvin. Default: "c".`),
 		),
 		mcp.WithString("lang",
 			mcp.DefaultString("en"),
-			mcp.Description("Language for weather descriptions - default: en"),
+			mcp.Description(`The language for the weather description text. Use standard two-letter language codes (e.g., "en", "es", "zh_CN"). Default: "en".`),
 		),
 	)
 
@@ -106,8 +108,14 @@ func weatherHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Call
 	if !ok {
 		return nil, errors.New("city must be a string")
 	}
-	units, _ := request.Params.Arguments["units"].(string)
-	lang, _ := request.Params.Arguments["lang"].(string)
+	units, ok := request.Params.Arguments["units"].(string)
+	if !ok || units == "" {
+		units = "c"
+	}
+	lang, ok := request.Params.Arguments["lang"].(string)
+	if !ok || lang == "" {
+		lang = "en"
+	}
 
 	current, err := getCurrent(city, units, lang)
 	if err != nil {
