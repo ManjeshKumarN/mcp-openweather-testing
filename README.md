@@ -1,3 +1,4 @@
+### This repository has the cotents of MCP tutorials from code with aarohi channel
 # MCP Weather Service
 
 A simple MCP service that provides current weather and 5-day forecast using the free OpenWeatherMap API.
