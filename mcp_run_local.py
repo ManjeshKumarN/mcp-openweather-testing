@@ -15,7 +15,7 @@ async def main():
     groq_api_key = os.getenv("GROQ_API_KEY")
     owm_key = os.getenv("OWM_API_KEY")
 
-    client = MultiServerMCPClient( # creating the mcp client
+    client = MultiServerMCPClient( # creating the mcp client and start the servers provided
         {
             "weather":{ # defining the mcp server for weather
                 "transport": "stdio",
@@ -33,7 +33,7 @@ async def main():
 
     tools = await client.get_tools() # getting the tools from the mcp server
 
-    # print(tools)
+    print(tools)
 
     llm = ChatGroq(temperature=0, model="openai/gpt-oss-20b", api_key=groq_api_key)
 
